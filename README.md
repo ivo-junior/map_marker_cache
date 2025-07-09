@@ -1,88 +1,32 @@
-
 # map_marker_cache
 
-`map_marker_cache` é uma biblioteca Flutter para **cache local de ícones personalizados de marcadores no Google Maps**, otimizando a performance e permitindo uso offline. Ideal para apps com múltiplos marcadores e sincronização com Firebase.
+`map_marker_cache` is a Flutter library designed to optimize the loading of custom marker icons for Google Maps by caching `BitmapDescriptor` objects locally using ObjectBox. This significantly reduces the performance overhead associated with converting images (like SVGs) to `BitmapDescriptor` at runtime, especially for applications with many markers or offline capabilities.
 
-## 🚀 Visão Geral
+## Features
+- **Performance Optimization**: Reduces marker rendering time by caching `BitmapDescriptor` objects.
+- **Offline Support**: Stores converted image data locally, enabling instant loading even without an internet connection.
+- **Simple API**: Provides an easy-to-use API for Flutter developers integrating with Google Maps.
+- **SVG to Uint8List Conversion**: Built-in utility for converting SVG assets to `Uint8List` for storage.
 
-Esta biblioteca resolve um problema comum de performance ao lidar com marcadores com imagens customizadas. Em vez de converter imagens como SVGs e PNGs em `BitmapDescriptor` a cada carregamento, o `map_marker_cache` converte e **salva os dados localmente** usando `ObjectBox`.
+## Running the Example
+To see `map_marker_cache` in action, you can run the example project:
 
-## 📦 Funcionalidades
+1.  Navigate to the `example/` directory:
+    ```bash
+    cd example
+    ```
 
-- ✅ Conversão de SVG/PNG em `BitmapDescriptor`
-- 💾 Armazenamento local com `ObjectBox`
-- ⚡ Carregamento instantâneo de marcadores
-- 📱 Compatível com uso offline
-- 🔁 Sincronização amigável com Firebase
+2.  Get the project dependencies:
+    ```bash
+    flutter pub get
+    ```
 
-## 🛠️ Instalação
+3.  Run the example application:
+    ```bash
+    flutter run
+    ```
 
-Adicione no seu `pubspec.yaml`:
+    This will launch a simple Flutter application displaying a Google Map with a custom marker loaded from cache.
 
-```yaml
-dependencies:
-  map_marker_cache: ^0.0.1
-```
-
-> Para mais detalhes, veja [docs/instalacao.md](docs/instalacao.md)
-
-## 🔧 Exemplo de uso
-
-```dart
-final cache = IconCacheService();
-
-// Converter SVG para bytes
-final Uint8List bytes = await SvgConverter.assetToBytes('assets/bike.svg');
-
-// Salvar no cache
-await cache.saveIcon('bike', bytes);
-
-// Usar como marcador
-final BitmapDescriptor icon = BitmapDescriptor.fromBytes(bytes);
-
-Marker(
-  markerId: MarkerId('bike'),
-  icon: icon,
-  position: LatLng(-23.5, -46.6),
-);
-```
-
-> Exemplos completos em [docs/exemplos.md](docs/exemplos.md)
-
-## 📐 Arquitetura
-
-O projeto segue uma arquitetura simples com separação por responsabilidade:
-
-```
-lib/
-├── map_marker_cache.dart       # Entrada do pacote
-├── services/
-│   └── icon_cache_service.dart # Serviço de cache
-├── utils/
-│   └── svg_converter.dart      # Conversão de SVG/PNG
-├── models/
-│   └── cached_icon.dart        # Entidade ObjectBox
-```
-
-> Veja mais em [docs/arquitetura.md](docs/arquitetura.md)
-
-## 📘 Documentação
-
-A documentação completa está disponível na pasta [`docs/`](docs/):
-
-- [Instalação](docs/instalacao.md)
-- [Arquitetura](docs/arquitetura.md)
-- [API](docs/api.md)
-- [Exemplos de uso](docs/exemplos.md)
-- [Notas para IA](ai-notes.md)
-- [FAQ](docs/faq.md)
-- [Changelog](docs/changelog.md)
-- [Contribuindo](docs/contribuindo.md)
-
-## 📜 Licença
-
-Este projeto está licenciado sob os termos da licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-Desenvolvido com 💙 por [Ivo Jr. - Ivo Tech Solutions](https://github.com/ivo-junior)
+## Documentation
+For detailed information on installation, basic usage, and architecture, please refer to the [official documentation](docs/index.md).
