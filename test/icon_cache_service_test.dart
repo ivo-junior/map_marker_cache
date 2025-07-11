@@ -57,7 +57,7 @@ void main() {
 
   setUp(() {
     fakeSvgConverter = FakeSvgConverter();
-    iconCacheService = IconCacheService(svgConverter: fakeSvgConverter.call);
+    iconCacheService = IconCacheService(store, svgConverter: fakeSvgConverter.call);
     // Limpa o banco de dados antes de cada teste
     store.box<CachedIcon>().removeAll(); // Usar removeAll da Box
   });
@@ -73,7 +73,6 @@ void main() {
       final testBytes = Uint8List.fromList([1, 2, 3, 4]);
       fakeSvgConverter.resultBytes = testBytes;
 
-      await iconCacheService.init();
       final resultBytes = await iconCacheService.getOrBuildAndCacheIcon(
         key: 'test_key',
         assetName: 'assets/test.svg',
@@ -96,7 +95,6 @@ void main() {
       // Salva um ícone diretamente no cache para simular um ícone já existente
       store.box<CachedIcon>().put(CachedIcon(key: 'cached_key', bytes: testBytes));
 
-      await iconCacheService.init();
       final resultBytes = await iconCacheService.getOrBuildAndCacheIcon(
         key: 'cached_key',
         assetName: 'assets/cached.svg',

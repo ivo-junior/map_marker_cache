@@ -8,49 +8,37 @@ import '../models/cached_icon.dart';
 import '../utils/svg_converter.dart';
 
 class IconCacheService {
-  late Store _store;
-  late Box<CachedIcon> _cachedIconBox;
+  final Box<CachedIcon> _cachedIconBox;
   final Future<Uint8List> Function(String, double, [Size? size]) _svgConverter;
 
-  IconCacheService({
+  IconCacheService(
+    Store store, {
     Future<Uint8List> Function(String, double, [Size? size])? svgConverter,
-  }) : _svgConverter = svgConverter ?? getBitmapDescriptorFromSvgAsset;
-
-  Future<void> init() async {
-    final docsDir = await getApplicationDocumentsDirectory();
-    // Future versions of ObjectBox will allow to place the database file in a sub-directory.
-    // For now, we use the main directory.
-    _store = Store(
-      getObjectBoxModel(),
-      directory: p.join(docsDir.path, "objectbox"),
-    );
-    _cachedIconBox = _store.box<CachedIcon>();
-  }
+  })  : _cachedIconBox = store.box<CachedIcon>(),
+        _svgConverter = svgConverter ?? getBitmapDescriptorFromSvgAsset;
 
   Future<Uint8List> getOrBuildAndCacheIcon({
-    String? key,
-    String? assetName,
-    double? devicePixelRatio,
+    required String key,
+    required String assetName,
+    required double devicePixelRatio,
     Size? size = const Size(20, 20),
   }) async {
+    // Find existing icon
     CachedIcon? cachedIcon =
-        _cachedIconBox.query(CachedIcon_.key.equals(key!)).build().findFirst();
+        _cachedIconBox.query(CachedIcon_.key.equals(key)).build().findFirst();
 
     if (cachedIcon != null) {
       return Uint8List.fromList(cachedIcon.bytes);
-    } else {
-      final Uint8List bytes = await _svgConverter(
-        assetName!,
-        devicePixelRatio!,
-        size,
-      );
-      final newCachedIcon = CachedIcon(key: key, bytes: bytes);
-      _cachedIconBox.put(newCachedIcon);
-      return bytes;
     }
-  }
 
-  void close() {
-    _store.close();
+    // If not found, build and cache it
+    final Uint8List bytes = await _svgConverter(
+      assetName,
+      devicePixelRatio,
+      size,
+    );
+    final newCachedIcon = CachedIcon(key: key, bytes: bytes);
+    _cachedIconBox.put(newCachedIcon);
+    return bytes;
   }
 }
