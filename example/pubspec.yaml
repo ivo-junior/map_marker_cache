@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   map_marker_cache:
     path: ../
-  google_maps_flutter: ^2.6.1
   flutter_svg: ^2.0.10+1
 
 dev_dependencies:
