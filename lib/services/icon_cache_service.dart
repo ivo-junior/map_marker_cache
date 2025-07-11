@@ -1,6 +1,4 @@
 import 'dart:typed_data';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 
 import '../objectbox.g.dart'; // generated code

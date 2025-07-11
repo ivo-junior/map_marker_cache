@@ -66,6 +66,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initCacheAndMarkers() async {
+    final double currentDevicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     try {
       await _mapMarkerCache.init();
 
@@ -73,41 +74,48 @@ class _MyAppState extends State<MyApp> {
         final Uint8List bytes = await _mapMarkerCache.getOrBuildAndCacheBytes(
           key: data.type.toString(),
           assetName: data.assetName,
-          devicePixelRatio: MediaQuery.of(context).devicePixelRatio,
+          devicePixelRatio: currentDevicePixelRatio,
           size: data.size,
         );
         _cachedMarkerBytes[data.type] = bytes;
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorCache = 'Failed to load cached markers: ${e.toString()}';
       });
     } finally {
-      setState(() {
-        _isLoadingCache = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingCache = false;
+        });
+      }
     }
   }
 
   Future<void> _loadNormalMarkers() async {
+    final double currentDevicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     try {
       await Future.delayed(const Duration(seconds: 2)); // Atraso artificial para demonstração
       for (final data in _markerData) {
         final Uint8List bytes = await getBitmapDescriptorFromSvgAsset(
           data.assetName,
-          MediaQuery.of(context).devicePixelRatio,
+          currentDevicePixelRatio,
           data.size,
         );
         _normalMarkerBytes[data.type] = bytes;
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorNormal = 'Failed to load normal markers: ${e.toString()}';
       });
     } finally {
-      setState(() {
-        _isLoadingNormal = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingNormal = false;
+        });
+      }
     }
   }
 

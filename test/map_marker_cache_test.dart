@@ -8,8 +8,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:map_marker_cache/map_marker_cache.dart';
 import 'package:map_marker_cache/objectbox.g.dart';
-import 'package:map_marker_cache/models/cached_icon.dart';
-import 'package:map_marker_cache/services/icon_cache_service.dart';
 
 // Mock para a função de conversão SVG
 Future<Uint8List> mockSvgConverter(String assetName, double devicePixelRatio, [Size? size]) async {
