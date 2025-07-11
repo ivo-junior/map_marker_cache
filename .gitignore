@@ -44,3 +44,18 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 GEMINI.md
+objectbox.g.dart
+objectbox-model.json
+
+# ObjectBox related
+objectbox.dll
+objectbox-c/
+
+# Temporary scripts
+install.sh
+download.sh
+
+# Test temporary directories
+test/temp_objectbox/
+test/temp_objectbox_map_marker_cache/
+objectbox.zip
