@@ -8,6 +8,58 @@
 - **Simple API**: Provides an easy-to-use API for Flutter developers integrating with Google Maps.
 - **SVG to Uint8List Conversion**: Built-in utility for converting SVG assets to `Uint8List` for storage.
 
+## Installation
+
+Add this to your package's `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  map_marker_cache: ^1.0.0 # Replace with the latest version
+```
+
+Then, install it by running:
+```bash
+flutter pub get
+```
+
+## Usage
+
+### 1. Initialize the Cache
+
+First, get an instance of `MapMarkerCache` and initialize it. This should be done once when your application starts.
+
+```dart
+import 'package:map_marker_cache/map_marker_cache.dart';
+
+// Initialize MapMarkerCache (singleton)
+await MapMarkerCache.instance.init();
+```
+
+### 2. Get or Create a Marker Icon
+
+Use the `getOrBuildAndCacheMarkerIcon` method to get a `BitmapDescriptor`. If the icon is already in the cache, it will be loaded instantly. If not, it will be created from the asset, cached, and then returned.
+
+```dart
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:map_marker_cache/map_marker_cache.dart';
+
+// Get a cached BitmapDescriptor
+final BitmapDescriptor markerIcon = await MapMarkerCache.instance.getOrBuildAndCacheMarkerIcon(
+  assetPath: 'assets/your_marker.svg', // Path to your SVG asset
+  // Optional: A unique key for your icon. If not provided, the assetPath is used as the key.
+  // key: 'unique_marker_id', 
+  // Optional: Specify the desired size.
+  // size: const Size(90, 90),
+);
+
+// Use the BitmapDescriptor with a Google Maps Marker
+Marker(
+  markerId: const MarkerId('marker_1'),
+  position: const LatLng(45.521563, -122.677433),
+  icon: markerIcon,
+);
+```
+
 ## Running the Example
 To see `map_marker_cache` in action, you can run the example project. The example now demonstrates the caching mechanism by displaying icons loaded from cache versus icons loaded normally (without cache) side-by-side, without requiring a Google Maps API key.
 
@@ -27,35 +79,3 @@ To see `map_marker_cache` in action, you can run the example project. The exampl
     ```
 
     This will launch a simple Flutter application displaying cached and non-cached marker icons.
-
-## Usage with Google Maps
-If you wish to use `map_marker_cache` with Google Maps, you will need to add `google_maps_flutter` to your project's `pubspec.yaml` and configure your Google Maps API key in your native project files (Android: `android/app/src/main/AndroidManifest.xml`, iOS: `ios/Runner/Info.plist`).
-
-Then, you can use the `getOrBuildAndCacheMarkerIcon` method to obtain `BitmapDescriptor` objects:
-
-```dart
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:map_marker_cache/map_marker_cache.dart';
-
-// Initialize MapMarkerCache (singleton)
-final mapMarkerCache = MapMarkerCache();
-await mapMarkerCache.init();
-
-// Get a cached BitmapDescriptor
-final BitmapDescriptor markerIcon = await mapMarkerCache.getOrBuildAndCacheMarkerIcon(
-  key: 'unique_marker_id', // A unique key for your icon
-  assetName: 'assets/your_marker.svg', // Path to your SVG asset
-  devicePixelRatio: MediaQuery.of(context).devicePixelRatio,
-  size: const Size(50, 50), // Desired size for the icon
-);
-
-// Use the BitmapDescriptor with a Google Maps Marker
-Marker(
-  markerId: const MarkerId('marker_1'),
-  position: const LatLng(45.521563, -122.677433),
-  icon: markerIcon,
-);
-```
-
-## Documentation
-For detailed information on installation, basic usage, and architecture, please refer to the [official documentation](docs/index.md).

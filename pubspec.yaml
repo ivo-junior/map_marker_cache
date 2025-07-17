@@ -1,5 +1,7 @@
 name: map_marker_cache
 description: "A Flutter library for caching custom Google Maps marker icons locally using ObjectBox, optimizing performance and enabling offline support."
+homepage: https://github.com/ivo-junior/map_marker_cache # TODO: ivo-junior
+repository: https://github.com/ivo-junior/map_marker_cache # TODO: ivo-junior
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 # publish_to: 'none' # Uncomment this line if you wish to publish to pub.dev
