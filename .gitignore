@@ -44,8 +44,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 GEMINI.md
-objectbox.g.dart
-objectbox-model.json
 
 # ObjectBox related
 objectbox.dll
