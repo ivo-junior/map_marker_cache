@@ -32,7 +32,6 @@ class MockPathProviderPlatform extends MockPlatformInterfaceMixin
 }
 
 void main() {
-  late MapMarkerCache mapMarkerCache;
   late Directory tempDir;
 
   setUpAll(() async {
@@ -45,14 +44,13 @@ void main() {
   });
 
   setUp(() async {
-    mapMarkerCache = MapMarkerCache();
-    await mapMarkerCache.init(tempDir.path, mockSvgConverter);
+    await MapMarkerCache.instance.init(tempDir.path, mockSvgConverter);
     // Limpa o banco de dados antes de cada teste
-    mapMarkerCache.clearData();
+    MapMarkerCache.instance.clearData();
   });
 
   tearDownAll(() {
-    mapMarkerCache.dispose();
+    MapMarkerCache.instance.dispose();
     tempDir.deleteSync(recursive: true);
   });
 
@@ -64,7 +62,7 @@ void main() {
       final testSize = const Size(100, 100);
 
       // Primeiro, verifica se o ícone não está no cache
-      final initialBitmapDescriptor = await mapMarkerCache.getOrBuildAndCacheMarkerIcon(
+      final initialBitmapDescriptor = await MapMarkerCache.instance.getOrBuildAndCacheMarkerIcon(
         key: testKey,
         assetName: testAssetName,
         devicePixelRatio: testDevicePixelRatio,
@@ -74,7 +72,7 @@ void main() {
       expect(initialBitmapDescriptor, isA<BitmapDescriptor>());
 
       // Agora, tenta recuperar do cache (deve ser o mesmo)
-      final cachedBitmapDescriptor = await mapMarkerCache.getOrBuildAndCacheMarkerIcon(
+      final cachedBitmapDescriptor = await MapMarkerCache.instance.getOrBuildAndCacheMarkerIcon(
         key: testKey,
         assetName: testAssetName, // assetName não importa se já está em cache
         devicePixelRatio: testDevicePixelRatio,

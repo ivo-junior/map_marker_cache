@@ -31,7 +31,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late MapMarkerCache _mapMarkerCache;
   final Map<MarkerType, Uint8List> _cachedMarkerBytes = {};
   final Map<MarkerType, Uint8List> _normalMarkerBytes = {};
   bool _isLoadingCache = true;
@@ -60,7 +59,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _mapMarkerCache = MapMarkerCache();
     _initCacheAndMarkers();
     _loadNormalMarkers();
   }
@@ -68,10 +66,10 @@ class _MyAppState extends State<MyApp> {
   Future<void> _initCacheAndMarkers() async {
     final double currentDevicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     try {
-      await _mapMarkerCache.init();
+      await MapMarkerCache.instance.init();
 
       for (final data in _markerData) {
-        final Uint8List bytes = await _mapMarkerCache.getOrBuildAndCacheBytes(
+        final Uint8List bytes = await MapMarkerCache.instance.getOrBuildAndCacheBytes(
           key: data.type.toString(),
           assetName: data.assetName,
           devicePixelRatio: currentDevicePixelRatio,
@@ -121,7 +119,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    _mapMarkerCache.dispose();
+    MapMarkerCache.instance.dispose();
     super.dispose();
   }
 
