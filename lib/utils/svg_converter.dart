@@ -5,6 +5,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+/// Converts an SVG asset into a `Uint8List` of PNG data.
+///
+/// - [assetName]: The path to the SVG asset.
+/// - [devicePixelRatio]: The device's pixel ratio for correct scaling.
+/// - [size]: The desired size of the output image. Defaults to 20x20 if not provided.
+///
+/// Returns a `Future<Uint8List>` containing the PNG data.
 Future<Uint8List> getBitmapDescriptorFromSvgAsset(
   String assetName,
   double devicePixelRatio, [

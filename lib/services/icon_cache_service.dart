@@ -5,16 +5,31 @@ import '../objectbox.g.dart'; // generated code
 import '../models/cached_icon.dart';
 import '../utils/svg_converter.dart';
 
+/// A service class responsible for handling the logic of caching and retrieving icons.
+///
+/// This class interacts with the ObjectBox store to persist and fetch icon data.
 class IconCacheService {
   final Box<CachedIcon> _cachedIconBox;
   final Future<Uint8List> Function(String, double, [Size? size]) _svgConverter;
 
+  /// Creates an instance of [IconCacheService].
+  ///
+  /// Requires an ObjectBox [Store] to interact with the database.
+  /// Optionally, a custom [svgConverter] function can be provided.
   IconCacheService(
     Store store, {
     Future<Uint8List> Function(String, double, [Size? size])? svgConverter,
   })  : _cachedIconBox = store.box<CachedIcon>(),
         _svgConverter = svgConverter ?? getBitmapDescriptorFromSvgAsset;
 
+  /// Gets an icon from the cache or builds and caches it if it doesn't exist.
+  ///
+  /// - [key]: A unique identifier for the icon.
+  /// - [assetName]: The path to the SVG asset.
+  /// - [devicePixelRatio]: The device's pixel ratio for correct scaling.
+  /// - [size]: The desired size of the icon.
+  ///
+  /// Returns the icon data as a `Uint8List`.
   Future<Uint8List> getOrBuildAndCacheIcon({
     required String key,
     required String assetName,
