@@ -13,8 +13,8 @@ import 'services/icon_cache_service.dart';
 /// This class provides a central point for initializing the cache, retrieving or building
 /// marker icons, and managing the underlying ObjectBox store.
 class MapMarkerCache {
-  late final Store _store;
-  late final IconCacheService _iconCacheService;
+  Store? _store;
+  IconCacheService? _iconCacheService;
 
   // Private constructor to control instantiation
   MapMarkerCache._();
@@ -30,12 +30,15 @@ class MapMarkerCache {
   /// An optional [directory] can be provided to specify a custom storage location.
   /// An optional [svgConverter] can be provided to customize the SVG to byte conversion.
   Future<void> init([String? directory, Future<Uint8List> Function(String, double, [Size? size])? svgConverter]) async {
+    if (_store != null) {
+      return; // Already initialized
+    }
     final docsDir = await getApplicationDocumentsDirectory();
     _store = Store(
       getObjectBoxModel(),
       directory: directory ?? p.join(docsDir.path, "map_marker_cache"),
     );
-    _iconCacheService = IconCacheService(_store, svgConverter: svgConverter);
+    _iconCacheService = IconCacheService(_store!, svgConverter: svgConverter);
   }
 
   /// Retrieves a [BitmapDescriptor] from the cache or builds and caches it if not found.
@@ -82,7 +85,7 @@ class MapMarkerCache {
     // Use the provided key or generate one from the asset path and size.
     final cacheKey = key ?? '${assetPath}_${size.width}x${size.height}';
 
-    return await _iconCacheService.getOrBuildAndCacheIcon(
+    return await _iconCacheService!.getOrBuildAndCacheIcon(
       key: cacheKey,
       assetName: assetPath,
       devicePixelRatio: devicePixelRatio,
@@ -94,11 +97,12 @@ class MapMarkerCache {
   ///
   /// Should be called when the cache is no longer needed, e.g., when the app is disposed.
   void dispose() {
-    _store.close();
+    _store?.close();
+    _store = null;
   }
 
   /// Clears all cached icon data from the ObjectBox store.
   void clearData() {
-    _store.box<CachedIcon>().removeAll();
+    _store?.box<CachedIcon>().removeAll();
   }
 }

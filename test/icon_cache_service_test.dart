@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'dart:io';
 import 'package:flutter/material.dart'; // Importar para usar Size
 
 import 'package:map_marker_cache/services/icon_cache_service.dart';
@@ -46,13 +47,15 @@ void main() {
   late IconCacheService iconCacheService;
   late FakeSvgConverter fakeSvgConverter;
   late Store store;
+  late Directory tempDir;
 
   setUpAll(() async {
     // Configura o mock para PathProviderPlatform
     PathProviderPlatform.instance = MockPathProviderPlatform();
 
-    // Inicializa o ObjectBox em um diretório temporário para testes
-    store = Store(getObjectBoxModel(), directory: './test/temp_objectbox');
+    // Cria um diretório temporário único para o ObjectBox store
+    tempDir = await Directory.systemTemp.createTemp('icon_cache_service_test_');
+    store = Store(getObjectBoxModel(), directory: tempDir.path);
   });
 
   setUp(() {
@@ -65,7 +68,9 @@ void main() {
   tearDownAll(() {
     // Fecha o store e limpa o diretório temporário após todos os testes
     store.close();
-    // TODO: Adicionar lógica para remover o diretório temporário
+    if (tempDir.existsSync()) {
+      tempDir.deleteSync(recursive: true);
+    }
   });
 
   group('IconCacheService', () {

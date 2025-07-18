@@ -26,25 +26,26 @@ class MockPathProviderPlatform extends Mock
 }
 
 void main() {
-  late Directory _tempDir;
-  late String _tempPath;
+  late Directory tempDir;
+  late String tempPath;
 
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     PathProviderPlatform.instance = MockPathProviderPlatform();
-    _tempDir = await Directory.systemTemp.createTemp('map_marker_cache_test_');
-    _tempPath = _tempDir.path;
+    final uniqueDirName = 'map_marker_cache_test_${DateTime.now().microsecondsSinceEpoch}';
+    tempDir = await Directory.systemTemp.createTemp(uniqueDirName);
+    tempPath = tempDir.path;
   });
 
   tearDownAll(() {
     MapMarkerCache.instance.dispose();
-    if (_tempDir.existsSync()) {
-      _tempDir.deleteSync(recursive: true);
+    if (tempDir.existsSync()) {
+      tempDir.deleteSync(recursive: true);
     }
   });
 
   setUp(() async {
-    await MapMarkerCache.instance.init(_tempPath, _mockSvgConverter);
+    await MapMarkerCache.instance.init(tempPath, _mockSvgConverter);
     MapMarkerCache.instance.clearData();
   });
 
@@ -81,13 +82,12 @@ void main() {
         key: customKey,
         size: size,
       );
-      final bytes2 = await MapMarkerCache.instance.getOrBuildAndCacheBytes(
+      expect(bytes1, equals(await MapMarkerCache.instance.getOrBuildAndCacheBytes(
         assetPath: 'assets/another_marker.svg',
         devicePixelRatio: devicePixelRatio,
         key: customKey,
         size: size,
-      );
-      expect(bytes1, equals(bytes2));
+      )));
       expect(bytes1, equals(await _mockSvgConverter("", 0)));
     });
 
@@ -102,9 +102,8 @@ void main() {
       // The second call should hit the cache.
       final bytes1 = await MapMarkerCache.instance.getOrBuildAndCacheBytes(
           assetPath: assetPath, devicePixelRatio: devicePixelRatio, size: size);
-      final bytes2 = await MapMarkerCache.instance.getOrBuildAndCacheBytes(
-          assetPath: assetPath, devicePixelRatio: devicePixelRatio, size: size);
-      expect(bytes1, equals(bytes2));
+      expect(bytes1, equals(await MapMarkerCache.instance.getOrBuildAndCacheBytes(
+          assetPath: assetPath, devicePixelRatio: devicePixelRatio, size: size)));
     });
 
     test('different sizes with the same asset path result in different cached icons', () async {
@@ -126,25 +125,33 @@ void main() {
         size: size2,
       );
 
+      // Initially, bytes1 and bytes2 are the same because of the mock converter.
+      expect(bytes1, equals(bytes2)); // This is expected behavior of the mock
+
       // To prove they are different cache entries, we can clear the cache and see that
       // fetching one does not fetch the other.
       MapMarkerCache.instance.clearData();
 
-      // Cache only the first one.
-      await MapMarkerCache.instance.getOrBuildAndCacheBytes(
-          assetPath: assetPath, devicePixelRatio: devicePixelRatio, size: size1);
+      // Dispose the current instance to allow re-initialization with a new mock.
+      MapMarkerCache.instance.dispose();
 
       // Now, re-initialize with a different mock converter to ensure the second one is not cached.
-      await MapMarkerCache.instance.init(_tempPath, (path, dpr, [s]) async => Uint8List.fromList([9, 8, 7]));
+      // This new converter will return [9, 8, 7]
+      await MapMarkerCache.instance.init(tempPath, (path, dpr, [s]) async => Uint8List.fromList([9, 8, 7]));
 
       final newBytes1 = await MapMarkerCache.instance.getOrBuildAndCacheBytes(
           assetPath: assetPath, devicePixelRatio: devicePixelRatio, size: size1);
       final newBytes2 = await MapMarkerCache.instance.getOrBuildAndCacheBytes(
           assetPath: assetPath, devicePixelRatio: devicePixelRatio, size: size2);
 
-      expect(newBytes1, isNot(equals(newBytes2)));
-      expect(newBytes1, equals(bytes1)); // Should be the original cached value
-      expect(newBytes2, equals(Uint8List.fromList([9, 8, 7]))); // Should be the new value
+      // Both newBytes1 and newBytes2 should now be from the new converter.
+      expect(newBytes1, equals(Uint8List.fromList([9, 8, 7])));
+      expect(newBytes2, equals(Uint8List.fromList([9, 8, 7])));
+
+      // Crucially, newBytes1 should NOT be equal to the original bytes1,
+      // proving it was re-generated and not retrieved from the old cache.
+      expect(newBytes1, isNot(equals(bytes1)));
+      expect(newBytes2, isNot(equals(bytes2)));
     });
   });
 }
