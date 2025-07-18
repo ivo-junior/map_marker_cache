@@ -44,7 +44,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late MapMarkerCache _mapMarkerCache;
   final Map<MarkerType, Uint8List> _cachedMarkerBytes = {};
   final Map<MarkerType, Uint8List> _normalMarkerBytes = {};
   bool _isLoadingCache = true;
@@ -73,14 +72,13 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _mapMarkerCache = MapMarkerCache();
     _initCacheAndMarkers();
     _loadNormalMarkers();
   }
 
   Future<void> _initCacheAndMarkers() async {
     try {
-      await _mapMarkerCache.init();
+      await MapMarkerCache.instance.init();
 
       for (final data in _markerData) {
         final Uint8List bytes = await _mapMarkerCache.getOrBuildAndCacheBytes(

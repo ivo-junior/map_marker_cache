@@ -57,8 +57,7 @@ import 'package:map_marker_cache/map_marker_cache.dart';
 // No seu main() ou initState de um widget de nível superior
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Necessário para acessar assets
-  final mapMarkerCache = MapMarkerCache();
-  await mapMarkerCache.init();
+  await MapMarkerCache.instance.init(); // Correto: use a instância singleton
   runApp(const MyApp());
 }
 ```
@@ -81,8 +80,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 Future<Uint8List> _loadIconBytes() async {
-  final mapMarkerCache = MapMarkerCache(); // Obtém a instância singleton
-  final Uint8List iconBytes = await mapMarkerCache.getOrBuildAndCacheBytes(
+  // Acesse a instância singleton diretamente
+  final Uint8List iconBytes = await MapMarkerCache.instance.getOrBuildAndCacheBytes(
     key: 'unique_icon_id', // Uma chave única para o seu ícone
     assetName: 'assets/your_icon.svg', // Caminho para o seu arquivo SVG
     devicePixelRatio: MediaQuery.of(context).devicePixelRatio,
@@ -101,7 +100,7 @@ Não se esqueça de chamar `dispose()` na instância de `MapMarkerCache` quando 
 ```dart
 @override
 void dispose() {
-  MapMarkerCache().dispose(); // Obtém a instância singleton e a descarta
+  MapMarkerCache.instance.dispose(); // Correto: use a instância singleton
   super.dispose();
 }
 ```
