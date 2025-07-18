@@ -40,44 +40,51 @@ class MapMarkerCache {
 
   /// Retrieves a [BitmapDescriptor] from the cache or builds and caches it if not found.
   ///
-  /// - [key]: A unique identifier for the icon.
-  /// - [assetName]: The path to the SVG asset.
+  /// If a [key] is not provided, a default key is generated from the [assetPath] and [size].
+  ///
+  /// - [assetPath]: The path to the SVG asset.
   /// - [devicePixelRatio]: The device's pixel ratio, used for correct scaling.
+  /// - [key]: An optional unique identifier for the icon.
   /// - [size]: The desired size of the icon.
   ///
   /// Returns a [BitmapDescriptor] ready to be used in a Google Maps Marker.
   Future<BitmapDescriptor> getOrBuildAndCacheMarkerIcon({
-    required String key,
-    required String assetName,
+    required String assetPath,
     required double devicePixelRatio,
-    Size size = const Size(20, 20),
+    String? key,
+    Size size = const Size(90, 90),
   }) async {
-    final Uint8List bytes = await _iconCacheService.getOrBuildAndCacheIcon(
-      key: key,
-      assetName: assetName,
+    final Uint8List bytes = await getOrBuildAndCacheBytes(
+      assetPath: assetPath,
       devicePixelRatio: devicePixelRatio,
+      key: key,
       size: size,
     );
     return BitmapDescriptor.bytes(bytes);
   }
 
-  /// Retrieves the byte data (`Uint8List`) of an icon from the cache or builds and caches it.
+  /// Retrieves the byte data (`Uint8List`) of an icon from the cache, or builds and caches it.
   ///
-  /// - [key]: A unique identifier for the icon.
-  /// - [assetName]: The path to the SVG asset.
+  /// If a [key] is not provided, a default key is generated from the [assetPath] and [size].
+  ///
+  /// - [assetPath]: The path to the SVG asset.
   /// - [devicePixelRatio]: The device's pixel ratio, used for correct scaling.
+  /// - [key]: An optional unique identifier for the icon.
   /// - [size]: The desired size of the icon.
   ///
   /// Returns the `Uint8List` data of the icon.
   Future<Uint8List> getOrBuildAndCacheBytes({
-    required String key,
-    required String assetName,
+    required String assetPath,
     required double devicePixelRatio,
-    Size size = const Size(20, 20),
+    String? key,
+    Size size = const Size(90, 90),
   }) async {
+    // Use the provided key or generate one from the asset path and size.
+    final cacheKey = key ?? '${assetPath}_${size.width}x${size.height}';
+
     return await _iconCacheService.getOrBuildAndCacheIcon(
-      key: key,
-      assetName: assetName,
+      key: cacheKey,
+      assetName: assetPath,
       devicePixelRatio: devicePixelRatio,
       size: size,
     );

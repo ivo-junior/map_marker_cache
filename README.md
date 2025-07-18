@@ -46,8 +46,9 @@ import 'package:map_marker_cache/map_marker_cache.dart';
 // Get a cached BitmapDescriptor
 final BitmapDescriptor markerIcon = await MapMarkerCache.instance.getOrBuildAndCacheMarkerIcon(
   assetPath: 'assets/your_marker.svg', // Path to your SVG asset
-  // Optional: A unique key for your icon. If not provided, the assetPath is used as the key.
-  // key: 'unique_marker_id', 
+  devicePixelRatio: MediaQuery.of(context).devicePixelRatio, // For correct scaling
+  // Optional: A unique key for your icon. If not provided, a key is generated from the assetPath and size.
+  // key: 'unique_marker_id',
   // Optional: Specify the desired size.
   // size: const Size(90, 90),
 );

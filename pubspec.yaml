@@ -2,9 +2,7 @@ name: map_marker_cache
 description: "A Flutter library for caching custom Google Maps marker icons locally using ObjectBox, optimizing performance and enabling offline support."
 homepage: https://github.com/ivo-junior/map_marker_cache # TODO: ivo-junior
 repository: https://github.com/ivo-junior/map_marker_cache # TODO: ivo-junior
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-# publish_to: 'none' # Uncomment this line if you wish to publish to pub.dev
+# publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -18,7 +16,7 @@ repository: https://github.com/ivo-junior/map_marker_cache # TODO: ivo-junior
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.0
 
 environment:
   sdk: ^3.7.0
@@ -30,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  flat_buffers: ^23.5.26 # Required by ObjectBox
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
